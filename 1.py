@@ -2,32 +2,57 @@ import time
 import json
 import os
 
+def load_tasks(filename='tasks.json'):
+    try:
+        with open(filename, 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return []
 
-def timer():
-    filename = 'data_time.json'
-    start_time = time.time()
+def save_tasks(tasks, filename='tasks.json'):
+    with open(filename, 'w') as file:
+        json.dump(tasks, file, indent=2)
 
-    if os.path.isfile(filename):
-        with open(filename) as file1:
-            elapsed_time = json.load(file1)
-            elapsed_time = float(elapsed_time)
-    else:
-        elapsed_time = 0
+def main():
+    tasks = load_tasks()
 
-    a = 0
+    while True:
+        print("\nTask Manager Menu:")
+        print("1. Add Task")
+        print("2. Delete Task")
+        print("3. Display Tasks")
+        print("4. Exit")
 
-    while a != 15:
-        a += 1
-        end_time = time.time()
+        choice = input("Enter your choice: ")
 
-        time.sleep(1)
-        print(f'end time = {end_time}')
-        print(f'elapsed time = {elapsed_time}')
-
-        if a % 5 == 0:
-            elapsed_time += end_time - start_time
-            start_time = end_time
-            with open('data_time.json', 'w') as file:
-                json.dump(elapsed_time, file)
-
-timer()
+        if choice == "1":
+            task = input("Enter task : ")
+            tasks.append(task)
+            save_tasks(tasks)
+            print("Task added successfully!")
+        elif choice == "2":
+            if tasks:
+                print("Tasks:")
+                for index, task in enumerate(tasks, start=1):
+                    print(f"{index}. {task}")
+                index = int(input("Enter index of task to delete: ")) - 1
+                if 0 <= index < len(tasks):
+                    del tasks[index]
+                    save_tasks(tasks)
+                    print("Task deleted successfully!")
+                else:
+                    print("Invalid index.")
+            else:
+                print("No tasks to delete.")
+        elif choice == "3":
+            if tasks:
+                print("Tasks:")
+                for index, task in enumerate(tasks, start=1):
+                    print(f"{index}. {task}")
+            else:
+                print("No tasks to display.")
+        elif choice == "4":
+            print("Exiting Task Manager.")
+            break
+        else:
+            print("Invalid choice. Please try again.")
